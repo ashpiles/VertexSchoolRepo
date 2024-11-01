@@ -19,7 +19,7 @@ public:
 
 	virtual Action ChooseAction() = 0;
 	void InitStats();
-	Action GetActionFromInput(int Input);
+	std::unique_ptr<Action> GetActionFromInput(int Input);
 
 protected:
 	std::string Name;

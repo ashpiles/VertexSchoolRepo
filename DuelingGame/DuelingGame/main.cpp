@@ -62,6 +62,10 @@ int main()
 
 } 
 
+/*
+The action is given the value
+it can be a composite design prblm
+*/
 
 // work on fusing this with the action look up table for more implicit logic
 void HandleActions(Player& player, Enemy& enemy) 

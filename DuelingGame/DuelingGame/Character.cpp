@@ -29,17 +29,17 @@ void Character::InitStats()
 	Health = MaxHealth;
 	Stamina = MaxStamina;
 }
-Action Character::GetActionFromInput(int Input)
+std::unique_ptr<Action> Character::GetActionFromInput(int Input)
 {
 	switch (Input)
 	{
-	case 0: return Action(ATTACK, Name);
-
+	case 0: 
+		return std::make_unique<AttackAction>(nullptr); 
 	case 1:
 		UpdateStamina(false);
-		return Action(PARRY, Name);
+		return std::make_unique<ParryAction>(nullptr);
 	case 2:
 		UpdateStamina(true);
-		return Action(DEFEND, Name);
+		return std::make_unique<DefendAction>(nullptr);
 	}
 }
