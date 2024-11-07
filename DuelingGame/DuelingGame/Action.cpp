@@ -1,4 +1,5 @@
 #include "Action.h"
+#include "Character.h"
 
 
 // 0 = ATTACK
@@ -27,46 +28,52 @@
 //}
 
 
-Action::Action(ActionMediator* mediator = nullptr) : mediator_(mediator) {}
+Action::Action(ActionMediator* mediator, Character* target)
+	: Mediator(mediator), Target(target), Parent(nullptr){}
 
-bool Action::IsComposite() const {
-	return false;
-}
 
-void Action::SetMediator(ActionMediator* mediator) {
-	this->mediator_ = mediator;
-}
-void Action::SetParent(Action* parent) {
-	this->parent_ = parent;
-}
 
-Action* Action::GetParent() const {
-	return this->parent_;
-}
+Action::~Action() {}
+
 bool Action::IsComposite() const {
 	return false;
 } 
 
+void Action::SetTarget(Character* target) {
+	this->Target = target;
+}
+
+void Action::SetMediator(ActionMediator* mediator) {
+	this->Mediator = mediator;
+}
+void Action::SetParent(Action* parent) {
+	this->Parent = parent;
+}
+
+Action* Action::GetParent() const {
+	return this->Parent;
+}
+
 void CompositeAction::Add(Action* action) {
-	children_.emplace_back(action);
+	Children.emplace_back(action);
 	action->SetParent(this);
 }
 
 void CompositeAction::Remove(Action* action) {
-	children_.remove_if([&](const std::shared_ptr<Action>& ptr) {
+	Children.remove_if([&](const std::shared_ptr<Action>& ptr) {
 		return ptr.get() == action;
 		});
 	action->SetParent(nullptr);
 }
 
 
-std::string CompositeAction::Act(Character* target) const { 
+std::string CompositeAction::Act() const { 
 	std::string result;
-	for (const auto& a : children_) {
-		if (a == children_.back())
-			result += a->Act(target);
+	for (const auto& a : Children) {
+		if (a == Children.back())
+			result += a->Act();
 		else
-			result += a->Act(target) + "+";
+			result += a->Act() + "+";
 	}
 	return "Branch(" + result + ")"; 
 }
@@ -76,7 +83,8 @@ bool CompositeAction::IsComposite() const {
 }
 
 
-void CombatActionMediator::ProcessActions(Action* sender, std::string event) const {
+// handles the comabt action priorties 
+void CombatActionMediator::ProcessActions(Action* sender, const std::string& event) const {
 
 	if (CompositeAction* composite = dynamic_cast<CompositeAction*>(sender)) {
 
@@ -86,17 +94,20 @@ void CombatActionMediator::ProcessActions(Action* sender, std::string event) con
 	}
 }
 
-AttackAction::AttackAction(ActionMediator* mediator = nullptr) : Action(mediator) { } 
-std::string AttackAction::Act(Character* target) const {
+AttackAction::AttackAction(ActionMediator* mediator, Character* target) 
+	: Action(mediator, target) { } 
+std::string AttackAction::Act() const {
 	return "test"; 
 }
 
-DefendAction::DefendAction(ActionMediator* mediator = nullptr) : Action(mediator) { } 
-std::string DefendAction::Act(Character* target) const {
+DefendAction::DefendAction(ActionMediator* mediator, Character* target)
+	: Action(mediator, target) { } 
+std::string DefendAction::Act() const {
 	return "test"; 
 }
 
-ParryAction::ParryAction(ActionMediator* mediator = nullptr) : Action(mediator) { } 
-std::string ParryAction::Act(Character* target) const {
+ParryAction::ParryAction(ActionMediator* mediator, Character* target)
+	: Action(mediator, target) { } 
+std::string ParryAction::Act() const {
 	return "test"; 
 }

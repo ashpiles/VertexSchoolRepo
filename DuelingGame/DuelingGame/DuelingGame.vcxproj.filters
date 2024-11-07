@@ -45,6 +45,12 @@
     <ClCompile Include="Action.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape2D.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h">
@@ -60,6 +66,12 @@
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Action.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape2D.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>

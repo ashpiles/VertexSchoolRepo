@@ -5,9 +5,9 @@
 class Enemy : public Character
 {
 public:
-	Enemy(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name); 
+	Enemy(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name, Rectangle Rect); 
 
-	Action ChooseAction() override;
+	std::unique_ptr<Action> ChooseAction() override;
 	void IncreaseDifficulty(int RoundNumber); 
 
 private: 

@@ -1,13 +1,12 @@
 #include "Enemy.h"
+#include "Action.h"
  
-Enemy::Enemy(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name) : 
-	Character(MaxHealth, AtkPower, Armor, MaxStamina, Name), Generator(std::random_device{}()), Distribution(0, 2)
-{ 
-}
+Enemy::Enemy(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name, Rectangle Rect) : 
+	Character(MaxHealth, AtkPower, Armor, MaxStamina, Name, Rect), Generator(std::random_device{}()), Distribution(0, 2)
+{ }
 
 
-Action Enemy::ChooseAction()
-{
+std::unique_ptr<Action> Enemy::ChooseAction() {
 	int Input = Distribution(Generator);
 	if (Stamina == 0)
 	{
@@ -18,10 +17,8 @@ Action Enemy::ChooseAction()
 } 
 
 
-void Enemy::IncreaseDifficulty(int RoundNumber)
-{
-	switch (RoundNumber)
-	{
+void Enemy::IncreaseDifficulty(int RoundNumber) {
+	switch (RoundNumber) {
 	case 1:
 		return;
 	case 2:
