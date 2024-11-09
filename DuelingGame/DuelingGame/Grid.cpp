@@ -1,15 +1,16 @@
 ﻿#include "Grid.h"
+#include <iostream>
  
 // Grid 
 /*======================================================================================*/
-Grid::Grid() 
+Grid::Grid() : memory(GridMemory())
 {
 	// now memory can be stored in different objects meant to cache memory
 	// an inherit issue that must then be dealt with is memory cached in seperate areas
-	memory = GridMemory();
 	grid.reset(memory.gridMemory);
+	FillMemory(memory.gridMemory);
 }
-Grid::~Grid() { } 
+Grid::~Grid() { }
 
 // (っ-﹏- ς)
 // please remember make debugging tools to check this stuff it is so scary
@@ -25,6 +26,19 @@ Cell Grid::CreateCell(int x, int y)
 {
 	return Cell(x, y);
 }
+
+void Grid::FillMemory(Cell* memory)
+{
+
+	int x,y = 0;
+	for (int i = 0; i < MAX_CELLS; i++)
+	{
+		x = i % 10;
+		y = i == 10 ? y + 10 : y;
+		memory[i].position.x = x;
+		memory[i].position.y = y;
+	}
+}
  
 GridMemory::GridMemory()
 {
@@ -35,15 +49,30 @@ GridMemory::~GridMemory()
 	free(gridMemory);
 }
 
+
 // Cell
 /*======================================================================================*/ 
+/*
+It is possible to add a grid item to unintialized cells
+*/
+Cell::Cell(int x, int y) : position({(float)x, (float)y}), componenets()
+{ }
 Cell::Cell() : position() { }
 Cell::~Cell() {}
 
+/*
+because the cell is a pointer allocated by malloc it is filled with junk data
+so the components list is actually gaining undefined behavior
+it is considered not empty but is not filled with any data
+*/
 void Cell::AddItem(GridItem* item)
 {
 	item->position = &position;
-	componenets.push_back(item);
+	std::cout << componenets.size() << std::endl;
+	if (componenets.empty())
+		componenets = { item };
+	else
+		componenets.push_back(item);
 }
 
 void Cell::RemoveItem(GridItem* item)
@@ -52,15 +81,20 @@ void Cell::RemoveItem(GridItem* item)
 	componenets.remove(item);
 }
 
+void Cell::DrawCell()
+{
+	for (auto const& i : componenets)
+		i->DrawItem();
+} 
 
 // GridItem 
 /*======================================================================================*/
-GridItem::GridItem(Vector2 position) 
+GridItem::GridItem(Vector2 position, GameResource* res) : position(nullptr), resource(res)
 { 
 	parent = Grid::GetCell(position);
 	parent->AddItem(this);
 }
-GridItem::GridItem(Cell* cell) 
+GridItem::GridItem(Cell* cell, GameResource* res) : position(nullptr), resource(res)
 {
 	parent = cell;
 	parent->AddItem(this);
@@ -70,13 +104,39 @@ GridItem::~GridItem() {}
 
 void GridItem::Move(Vector2 dir)
 {
-	// ask the grid to get the cell we want by adding current pos w/ dir
-	// remove ourselves from this cell
-	// add ourselves to the desired cell 
-	Cell* cell = Grid::GetCell(*position); 
+	Cell* target = Grid::GetCell(*position); 
+	parent->RemoveItem(this);
+	target->AddItem(this);
+
+}
+
+Vector2 GridItem::GetGridPos()
+{
+	return *position;
+}
+Vector2 GridItem::GetWorldPos()
+{
+	Vector2 pos = *position;
+	pos.x *= 32;
+	pos.y *= 32;
+	return pos;
+}
+
+void GridItem::DrawItem()
+{
+	DrawTextureV(resource->GetTexture(), GetWorldPos(), WHITE);
 }
 
 
+
+// Tile 
+/*======================================================================================*/
+Tile::Tile(Vector2 dir, GameResource* res) : GridItem(dir, res) 
+{
+}
+Tile::Tile(Cell* cell, GameResource* res) : GridItem(cell, res)
+{}
+Tile::~Tile() {}
 
 /*Grid::Grid()
 {

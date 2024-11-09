@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Action.h"
 #include "Grid.h"
+#include "GameObject.h"
 
 #include "raylib.h"
 
@@ -16,16 +17,35 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Dungeons Dungeons and more Dungeons");
 
-	Player player(5, 2, 2, 2, "Hero", {400, 280, 25, 25});
-	player.Position = { 400, 280 };
+	GameResource playerRes = GameResource("../Resources/gobo.png");
+	GameResource tileRes = GameResource("../Resources/tile.png");
+	CharacterStats playerStats = {
+		.maxHealth = 5,
+		.health = 5,
+		.atkPower = 2,
+		.armor = 2,
+		.maxStamina = 5,
+		.stamina = 5 
+	};
+
+	Grid grid = Grid();
+
+	for (int i = 0; i < 10; i++)
+	{
+		Vector2 dir = {5, i};
+		Tile tile(dir, &tileRes);
+	}
+
+	Player player("Hero", playerStats, Vector2{0,0}, &playerRes);
+
+	Vector2 playerPos = player.GetWorldPos();
 	Camera2D camera = { 0 };
-	camera.target = { player.Position.x + 20.0f, player.Position.y + 20.0f };
+	camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f };
 	camera.offset = { screenWidth / 2.0f, screenHeight / 2.0f };
 	camera.rotation = 0.0f;
 	camera.zoom = 1.0f;
     SetTargetFPS(60);
 
-	Grid grid();
 
 	float timer = 0;
 
@@ -45,7 +65,7 @@ int main(void)
 		}
 
 
-		camera.target = { player.Position.x + 20.0f, player.Position.y + 20.0f };
+		//camera.target = { player.Position.x + 20.0f, player.Position.y + 20.0f };
  
 		camera.zoom += ((float)GetMouseWheelMove() * 0.05f);
 
@@ -59,8 +79,14 @@ int main(void)
             ClearBackground(RAYWHITE);
 			BeginMode2D(camera);
 
-				DrawRectangleRec(player.GetHitbox(), RED);
-				Rectangle rect = player.GetHitbox();
+			for (int x = 0; x < 10; x++)
+			{
+				//Cell* cell  = Grid::GetCell({5, (float) x}); 
+				//cell->DrawCell();
+			}
+
+			//	DrawRectangleRec(player.GetHitbox(), RED);
+				//Rectangle rect = player.GetHitbox();
 
 			EndMode2D();
 

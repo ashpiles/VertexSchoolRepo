@@ -38,7 +38,6 @@ public:
 	~Grid();
 private:
 	Cell CreateCell(int x, int y);
-	void FillMemory(Cell* memory);
 	static std::unique_ptr<Cell> grid;
 	GridMemory memory;
 };
@@ -54,12 +53,12 @@ public:
 
 	void AddItem(GridItem* item);
 	void RemoveItem(GridItem* item);
-	void DrawCell(); // grid items should have a "draw flag" to signify what should and shouldn't be drawn
 private:
 	Vector2 position; // is possible to change position; try and make this unchanging
 	Cell(int x, int y);
-	std::list<GridItem*> componenets;
 	friend Grid;
+protected:
+	std::list<GridItem*> componenets;
 };
 
 // componenet
@@ -69,33 +68,22 @@ public:
 	~GridItem();
 
 	void Move(Vector2 dir); 
-	Vector2 GetGridPos();
-	Vector2 GetWorldPos();
-	void DrawItem();
-
-
-protected:
-	GridItem(Vector2 position, GameResource* res);
-	GridItem(Cell* parent, GameResource* res); 
-	GameResource* resource;
-	Vector2* position;
-
+	GridItem(Vector2 position);
+	GridItem(Cell* parent);
 private: 
+	Vector2* position;
 	Cell* parent;
+	GameResource* resource;
 	friend Cell;
 };
- 
-// tiles need to work in a way that makes it so only one tile per cell can be placed
-class Tile : protected GridItem
-{ 
-public:
-	~Tile();
-	Tile(Vector2 dir, GameResource* res);
-	Tile(Cell* cell, GameResource* res);
-	// need to override the move func
-	//void Move(Vector2 dir);
+
+
+// needs logic to insure one grid per cell 
+class Tile : GridItem
+{
+	Tile(GameResource* res);
 };
- 
+
 
 
 

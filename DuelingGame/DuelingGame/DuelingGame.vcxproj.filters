@@ -48,7 +48,7 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Shape2D.cpp">
+    <ClCompile Include="GameObject.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +71,7 @@
     <ClInclude Include="Grid.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Shape2D.h">
+    <ClInclude Include="GameObject.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>

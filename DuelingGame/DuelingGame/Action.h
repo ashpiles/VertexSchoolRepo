@@ -78,7 +78,7 @@ class CombatActionMediator : public ActionMediator {
 protected:
     Action* action;
 public:
-    const std::map<ActionType, std::array<float, 3>> actionMap = {
+    const std::map<ActionType, std::array<float, 3> > actionMap = {
         {ATTACK, {0, 0.5f, -2}},
         {DEFEND, {0.5f, 0, 0}},
         {PARRY, {2, 0, 0}}

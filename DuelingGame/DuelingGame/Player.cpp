@@ -4,15 +4,7 @@
 #include <iostream>
 
 
-Player::Player(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name, Rectangle Rect) 
-	: Character(MaxHealth, AtkPower, Armor, MaxStamina, Name, Rect)
-{ 
-} 
+Player::Player(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res) 
+	: Character(name_, stats_, pos, res) { } 
 
 
-std::unique_ptr<Action> Player::ChooseAction()
-{
-	int Input = 1; 
-
-	return GetActionFromInput(Input); 
-}

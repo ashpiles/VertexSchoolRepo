@@ -5,10 +5,9 @@
 class Enemy : public Character
 {
 public:
-	Enemy(int MaxHealth, int AtkPower, int Armor, int MaxStamina, std::string Name, Rectangle Rect); 
+	Enemy(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res);
 
-	std::unique_ptr<Action> ChooseAction() override;
-	void IncreaseDifficulty(int RoundNumber); 
+	//void IncreaseDifficulty(int RoundNumber); 
 
 private: 
 	std::mt19937 Generator;
