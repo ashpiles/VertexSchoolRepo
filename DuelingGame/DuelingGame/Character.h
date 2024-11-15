@@ -20,7 +20,8 @@ class Character : public GridItem
 {
 public:
 
-	Character(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res);
+	Character(std::string name_, CharacterStats stats_, GameResource* res);
+	~Character();
 
 	void UpdateHealth(int Amount);
 	void UpdateStamina(bool Increase);

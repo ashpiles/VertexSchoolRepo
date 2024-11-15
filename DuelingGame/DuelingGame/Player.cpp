@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-Player::Player(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res) 
-	: Character(name_, stats_, pos, res) { } 
+Player::Player(std::string name_, CharacterStats stats_, GameResource* res)
+	: Character(name_, stats_, res) { }
 
-
+Player::~Player() {}

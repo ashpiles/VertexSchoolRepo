@@ -4,6 +4,7 @@
 class Player : public Character
 {
 public:
-	Player(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res);
+	Player(std::string name_, CharacterStats stats_, GameResource* res);
+	~Player();
 	
 };

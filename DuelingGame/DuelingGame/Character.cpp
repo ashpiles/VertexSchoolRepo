@@ -3,8 +3,10 @@
 #include "Character.h"
 #include <iostream>
 
-Character:: Character(std::string name_, CharacterStats stats_, Vector2 pos, GameResource* res)
-	: GridItem(pos, res), name(name_), stats(stats_) {}
+Character::Character(std::string name_, CharacterStats stats_, GameResource* res)
+	: GridItem(res), name(name_), stats(stats_) {}
+
+Character::~Character() { }
 
 void Character::UpdateHealth(int Amount) {
 	stats.health += Amount;
