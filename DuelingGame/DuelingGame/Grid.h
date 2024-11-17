@@ -65,7 +65,7 @@ class Cell final
 public:
 	// add cell needs a template func which converts the item to a unique ptr
 
-	void AddItem(std::unique_ptr<GridItem> item);
+	void AddItem(GridItem& item);
 	void RemoveItem(GridItem& item);
 	std::unique_ptr<GridItem> PopItem(GridItem& item);
 	void DrawCell(); // have a flag for grid items to determine if they are to be drawn
@@ -79,7 +79,7 @@ private:
 	Coordinate position;
 
 	// there needs to be a draw priority on draw items
-	std::list<std::unique_ptr<GridItem> > items; 
+	std::map<std::string, std::unique_ptr<GridItem> > items; // in the future not a unique ptr but a calling func to the obj
 	friend class Grid;
 };
 
@@ -116,85 +116,6 @@ public:
 	~Tile();
 };
 
-/*
 
-class GridMemory final
-{ 
-private:
-	GridMemory();
-	~GridMemory();
-	Cell* gridMemory;
-	friend Grid;
-};
-
-
-class Grid final
-{
-public:
-	Cell* GetCell(Coordinate coordinate);
-	void MoveGridItem(GridItem* item, Coordinate coord);
-	void AddToGrid(GridItem* item, Coordinate coord);
-	Grid();
-	~Grid();
-private:
-	Cell CreateCell(int x, int y);
-	void FillMemory(Cell* memory);
-	Cell* grid;
-	GridMemory memory;
-	std::map<Coordinate, int> map;
-};
-
-
-
-// composite
-
-class Cell final
-{
-public:
-	Cell();
-	~Cell();
-
-	void AddItem(GridItem* item);
-	void RemoveItem(GridItem* item);
-	void DrawCell(); // grid items should have a "draw flag" to signify what should and shouldn't be drawn
-	Coordinate GetPosition() { return position; }
-private:
-	Coordinate position;
-	Cell(int x, int y);
-	std::list<GridItem*> componenets;
-	friend Grid;
-};
-
-// componenet
-class GridItem
-{
-public:
-	~GridItem();
-
-	Coordinate GetGridPos();
-	Vector2 GetWorldPos();
-	void DrawItem();
-
-protected:
-	GridItem(GameResource* res);
-	GridItem();
-	GameResource* resource;
-
-private: 
-	Coordinate coord;
-	friend Cell;
-	friend Grid;
-};
- 
-class Tile : public GridItem
-{ 
-public:
-	~Tile();
-	Tile();
-	Tile(GameResource* res);
-	// need to override the move func
-	//void Move(Vector2 dir);
-};
-*/
  
 #endif

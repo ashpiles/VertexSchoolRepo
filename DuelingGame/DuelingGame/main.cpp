@@ -38,13 +38,12 @@ int main(void)
 	for (auto& i : Grid::GetCells({ -5,-5 }, { 5,5 }))
 	{
 		tiles.push_back(Tile(&tileRes));
-		i->AddItem(std::make_unique<Tile>(tiles.back()));
+		i->AddItem((tiles.back()));
 	}
 	
 	Player player("hero", playerStats, &playerRes);
 
-	Grid::GetCell({ 0, 0 })
-		.AddItem(std::make_unique<Player>(player));
+	Grid::GetCell({ 0, 0 }).AddItem(player);
 
 
 	Vector2 playerPos = player.GetWorldPos();

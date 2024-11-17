@@ -116,18 +116,15 @@ Cell::~Cell()
 
 // ask for refrence to insure that the smart ptr is taken
 
-void Cell::AddItem(std::unique_ptr<GridItem> item)
+void Cell::AddItem(GridItem& item)
 {
-	item->position = position;
-	items.push_back(std::move(item));
+	item.position = position;
+	items[item.ID] = std::make_unique<GridItem>(item);
 }
 
 void Cell::RemoveItem(GridItem& item)
 { 
-	items.remove_if([&item](const std::unique_ptr<GridItem>& p) 
-		{
-			return p.get() == &item; 
-		} );
+	items.erase(item.ID);
 }
 
 // not working as intended
@@ -135,17 +132,17 @@ std::unique_ptr<GridItem> Cell::PopItem(GridItem& item)
 {
 	std::unique_ptr<GridItem> extractedItem = nullptr;
 
-	auto it = std::find_if(items.begin(), items.end(),
-		[&item](const std::unique_ptr<GridItem>& p) {
-			return p.get() == &item;
-		});
-
-	if (it != items.end())
-	{
-		extractedItem = std::move(*it);
-		items.erase(it);
-	}
-
+//	auto it = std::find_if(items.begin(), items.end(),
+//		[&item](const std::unique_ptr<GridItem>& p) {
+//			return p.get() == &item;
+//		});
+//
+//	if (it != items.end())
+//	{
+//		extractedItem = std::move(*it);
+//		items.erase(it);
+//	}
+//
 	return extractedItem;
 }
 
@@ -154,7 +151,7 @@ void Cell::DrawCell()
 {
 	for (auto const& i : items)
 	{ 
-		i->DrawItem();
+		i.second->DrawItem();
 	}
 
 }
@@ -205,18 +202,8 @@ void GridItem::Move(Coordinate coord)
 	coord.x += this->position.x;
 	coord.y += this->position.y;
 
-	auto poppedItem = Grid::GetCell(this->position).PopItem(*this);
-
-	if (poppedItem) // Ensure PopItem succeeded
-	{
-		Grid::GetCell(coord).AddItem(std::move(poppedItem));
-		this->position = coord; // Update the position of the GridItem
-	}
-	else
-	{
-		// Handle error (e.g., item not found in current cell)
-		std::cerr << "Error: Unable to move GridItem. Item not found in current cell.\n";
-	}
+	Grid::GetCell(this->position).RemoveItem(*this);
+	Grid::GetCell(coord).AddItem(*this);
 }
 
 
