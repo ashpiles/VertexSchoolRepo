@@ -38,6 +38,10 @@ void Character::DrawItem()
 	DrawTextureV(resource->GetTexture(), pos, WHITE);
 }
 
+void Character::Move(Coordinate coord)
+{
+
+}
 
 //std::unique_ptr<Action> Character::GetActionFromInput(int Input) {
 //	switch (Input) {

@@ -10,9 +10,6 @@
 
 #include "raylib.h"
 
-#define MAX_BATCH_ELEMENTS 8192
-
-
 // the issue is that i am moving data objs around its getting a little complex
 // there are pointer 
 
@@ -45,7 +42,7 @@ int main(void)
 	}; 
 
 
-	Grid grid = Grid();
+	/*Grid grid = Grid();
 	std::vector<Tile> tiles;
 	for (auto& i : Grid::GetCells({ -10, -10 }, { 10, 10 }))
 	{
@@ -58,14 +55,14 @@ int main(void)
 		{
 			tiles.push_back(Tile(&tileRes));
 		}
-		i->AddItem((tiles.back()));
+		i->AddItem(&tiles.back());
 	}
 	
 	Player player("hero", playerStats, &playerRes);
 	Enemy enemy("gobo", enemyStats, &enemyRes);
 
-	Grid::GetCell({ 0, 0 }).AddItem(player);
-	Grid::GetCell({ 1, 0 }).AddItem(enemy); 
+	Grid::GetCell({ 0, 0 }).AddItem(&player);
+	Grid::GetCell({ 1, 0 }).AddItem(&enemy); 
 
 	Vector2 playerPos = player.GetWorldPos();
 	Camera2D camera = { 0 };
@@ -81,12 +78,12 @@ int main(void)
 
 	// loops 4ever
 //	Grid::PathFindTo({ 0,0 });
-
+*/
     while (!WindowShouldClose())
     {
         // Update
         //---------------------------------------------------------------------------------- 
-		Vector2 movement = { 0, 0 };
+	/*	Vector2 movement = {0, 0};
 		if (menue.IsOpen() == false) 
 		{ 
 			if		(IsKeyDown(KEY_D)) player.Move({  1, 0 });
@@ -98,18 +95,18 @@ int main(void)
 		menue.ListenForInput((KeyboardKey) GetKeyPressed());
 		playerPos = player.GetWorldPos();
 		camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f }; 
-	
+	*/
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(BLACK);
-			BeginMode2D(camera);
+			//BeginMode2D(camera);
 
-				grid.DrawGrid();
-				if (menue.IsOpen()) menue.Draw();
+				//grid.DrawGrid();
+				//if (menue.IsOpen()) menue.Draw();
 	
-			EndMode2D(); 
+			//EndMode2D(); 
 
         EndDrawing();
     }

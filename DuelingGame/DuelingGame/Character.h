@@ -26,8 +26,9 @@ public:
 	void UpdateHealth(int Amount);
 	void UpdateStamina(bool Increase);
 
-	void DrawItem();
 	void InitStats();
+	void DrawItem();
+	void Move(Coordinate coord);
 	//std::unique_ptr<Action> GetActionFromInput(int Input); 
 	//virtual std::unique_ptr<Action> ChooseAction() = 0;
 
