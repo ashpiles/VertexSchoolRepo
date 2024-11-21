@@ -4,7 +4,11 @@
 #include <iostream>
 
 Character::Character(std::string name_, CharacterStats stats_, GameResource* res)
-	: GridItem(res), name(name_), stats(stats_) {}
+	: GridItem(res), name(name_), stats(stats_), moveTimerMax(5)
+{
+	renderDepth = 1;
+	collisionLayer = 1;
+}
 
 Character::~Character() { }
 
@@ -28,6 +32,12 @@ void Character::InitStats() {
 	stats.health  = stats.maxHealth;
 	stats.stamina = stats.maxStamina;
 }
+void Character::DrawItem()
+{
+	Vector2 pos = { position.x * TILE_SIZE * 2, position.y * TILE_SIZE * 2 };
+	DrawTextureV(resource->GetTexture(), pos, WHITE);
+}
+
 
 //std::unique_ptr<Action> Character::GetActionFromInput(int Input) {
 //	switch (Input) {

@@ -16,7 +16,7 @@ struct CharacterStats
 	int stamina; 
 };
 
-class Character : public GridItem
+class Character : virtual public GridItem
 {
 public:
 
@@ -26,12 +26,16 @@ public:
 	void UpdateHealth(int Amount);
 	void UpdateStamina(bool Increase);
 
+	void DrawItem();
 	void InitStats();
 	//std::unique_ptr<Action> GetActionFromInput(int Input); 
 	//virtual std::unique_ptr<Action> ChooseAction() = 0;
 
 
 protected:
+	const float moveTimerMax;
+	float moveTimer = 0;
+
 	std::string name;
 	CharacterStats stats;
 };

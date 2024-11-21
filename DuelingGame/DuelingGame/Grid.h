@@ -4,7 +4,7 @@
 #include <map>
 #include <list>
 #include <vector>
-#include "raylib.h"
+#include <queue>
 #include <memory>
 #include <cmath>
 #include "GameObject.h"
@@ -16,7 +16,7 @@ class Grid;
 class GridMemory;
 
 #define MAX_CELLS 400
-
+#define TILE_SIZE 16
 
 struct Coordinate
 {
@@ -53,12 +53,14 @@ public:
 	static Cell& GetCell(Coordinate coord);
 	static std::vector<Cell*> GetCells(Coordinate from, Coordinate to); 
 	static std::unique_ptr<Cell> grid;
+	static void PathFindTo(Coordinate coord);
 	void DrawGrid();
 private:
 	Cell* memory;
 	static std::map<int, int> gridMap;
 
 }; 
+
 
 class Cell final
 {
@@ -69,6 +71,7 @@ public:
 	void RemoveItem(GridItem& item);
 	std::unique_ptr<GridItem> PopItem(GridItem& item);
 	void DrawCell(); // have a flag for grid items to determine if they are to be drawn
+	bool CanItemMove(GridItem& item);
 	Coordinate GetPosition() { return position; }
 	~Cell();
 
@@ -93,27 +96,36 @@ public:
 	GridItem();
 	GridItem(GameResource* res);
 	~GridItem();
-	void DrawItem();
+	virtual void DrawItem() = 0;
 	void Move(Coordinate coord);
 	const Coordinate GetPosition() { return position; }
-	Vector2 GetWorldPos();
+	int GetCollisionLayer() { return collisionLayer; }
+	Vector2 GetWorldPos(); 
+	 const std::string ID;
 
-	const std::string ID;
+protected: 
+	int renderDepth = 0;
+	int collisionLayer = 0; // should make an unisgned bit mask
+	const float moveTimerMax = 50;
+	float moveTimer = 0;
+	Coordinate position;
+    GameResource* resource;
 
 private:
 	std::string MakeUUID();
-	Coordinate position;
-    GameResource* resource;
-	friend class Cell;
-
+	friend class Cell; 
 };
 
-class Tile : public GridItem
+
+class Tile :virtual  public GridItem
 {
 public:
 	Tile();
-	Tile(GameResource* res);
+	Tile(GameResource* res); 
+	Tile(GameResource* res, int colLayer);
 	~Tile();
+
+	void DrawItem();
 };
 
 

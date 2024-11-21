@@ -1,5 +1,6 @@
 ﻿#include "Grid.h"
 #include <iostream>
+#include <algorithm>
 
 // Grid
 /*=========================================================================================*/
@@ -56,7 +57,7 @@ Cell& Grid::GetCell(Coordinate coord)
 	if (!gridMap.contains(hash))
 	{
 		std::cerr << "Error: Invalid coordinate (" << coord.x << ", " << coord.y << ").\n";
-		throw std::out_of_range("Coordinate out of bounds");
+throw std::out_of_range("Coordinate out of bounds");
 	}
 	return grid.get()[gridMap.at(hash)];
 }
@@ -103,6 +104,52 @@ std::vector<Cell*> Grid::GetCells(Coordinate from, Coordinate to)
 	return cells;
 }
 
+// likely will need to seperate into its own class
+
+
+// need to tighten up grid and movement sytem
+// I should make obj pools and the grid passes around the uuid not a pointer
+// movement will not be confined to the grid
+void Grid::PathFindTo(Coordinate coord)
+{
+	std::queue<Coordinate> frontier;
+	std::map<int, bool> reached;
+	frontier.push(coord);
+	reached[coord.Hash()] = true;
+
+	while (!frontier.empty())
+	{
+		Coordinate current = frontier.front();
+		// needs a safe version which grabs all available at a collision level
+		auto neighbours = Grid::GetCells(
+			{ current.x - 1, current.y - 1 }, 
+			{ current.x + 1, current.y + 1 }
+		);
+
+		for (auto next : neighbours)
+		{ 
+			for (auto const& item : next->items)
+			{
+				Coordinate pos = next->position;
+				if (item.second->GetCollisionLayer() == 0 && (!reached.contains(pos.Hash())))
+				{
+					frontier.push(pos);
+					reached[pos.Hash()] = true;
+					std::cout << pos.x << ", " << pos.y << std::endl;
+					continue;
+				}
+			}
+
+		}
+	}
+	// originating from coord
+	// find reachable coords
+	// mark path from one cell to another to create a vector field
+	// add weight to each cell
+}
+
+
+
 // Cell
 /*=========================================================================================*/
 Cell::Cell() : position{ 0,0 } {}
@@ -146,15 +193,35 @@ std::unique_ptr<GridItem> Cell::PopItem(GridItem& item)
 	return extractedItem;
 }
 
-
+// rendering is a concern which must be seperated
 void Cell::DrawCell()
 {
+	std::map<int, std::vector<std::string> > drawMap; // maybe meging this with a larger chunk
+
 	for (auto const& i : items)
 	{ 
-		i.second->DrawItem();
+		drawMap[i.second->renderDepth].push_back(i.first);
 	}
-
+	for (auto const& j : drawMap)
+	{
+		for (auto const& l : drawMap[j.first])
+		{
+			items[l]->DrawItem();
+		}
+	}
 }
+ 
+bool Cell::CanItemMove(GridItem& item)
+{
+
+	for (auto const& i : items)
+	{
+		if (i.second->collisionLayer >= item.collisionLayer)
+			return false;
+	}
+	return true;
+}
+
 
 // GridItem
 /*=========================================================================================*/
@@ -174,7 +241,8 @@ std::string GridItem::MakeUUID()
     const bool dash[] = { 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0 };
 
     std::string res;
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 16; i++)
+	{
         if (dash[i]) res += "-";
         res += v[dist(rng)];
         res += v[dist(rng)];
@@ -182,11 +250,6 @@ std::string GridItem::MakeUUID()
     return res;
 }
 
-void GridItem::DrawItem()
-{
-	Vector2 pos = { position.x * 32, position.y * 32 };
-	DrawTextureV(resource->GetTexture(), pos, WHITE);
-}
 
 /*
 the current memory structure might be bad. Its doing a lot.
@@ -202,16 +265,32 @@ void GridItem::Move(Coordinate coord)
 	coord.x += this->position.x;
 	coord.y += this->position.y;
 
-	Grid::GetCell(this->position).RemoveItem(*this);
-	Grid::GetCell(coord).AddItem(*this);
+	if (moveTimerMax < moveTimer)
+	{ 
+		if (Grid::GetCell(coord).CanItemMove(*this))
+		{ 
+			Grid::GetCell(this->position).RemoveItem(*this);
+			Grid::GetCell(coord).AddItem(*this);
+			moveTimer = 0;
+		}
+		else
+		{ 
+			std::cout << "Tried to move on occupied space" << std::endl;
+		} 
+	}
+	else
+	{
+		moveTimer += GetTime();
+	} 
+	//std::cout << moveTimer << std::endl;
 }
 
 
 Vector2 GridItem::GetWorldPos()
 {
 	Vector2 vec;
-	vec.x = 32.0f * position.x;
-	vec.y = 32.0f * position.y;
+	vec.x = TILE_SIZE * position.x;
+	vec.y = TILE_SIZE * position.y;
 	return vec;
 }
 
@@ -219,7 +298,18 @@ Vector2 GridItem::GetWorldPos()
 /*=========================================================================================*/
 Tile::Tile() : GridItem() {}
 Tile::Tile(GameResource* res) : GridItem(res) {}
+Tile::Tile(GameResource* res, int colLayer) : GridItem(res)
+{
+	collisionLayer = colLayer;
+}
 Tile::~Tile() {}
+
+void Tile::DrawItem()
+{
+	Vector2 pos = { position.x * TILE_SIZE, position.y * TILE_SIZE };
+	DrawTextureV(resource->GetTexture(), pos, WHITE);
+}
+
 
 // GtidItemPool 
 /*=========================================================================================*/
@@ -233,152 +323,3 @@ fix Move func
  - throw in logic whic prevents doubles
 
 */
-
-//// Grid 
-///*======================================================================================*/
-//Grid::Grid() : memory(GridMemory())
-//{
-//	// now memory can be stored in different objects meant to cache memory
-//	// an inherit issue that must then be dealt with is memory cached in seperate areas
-//	grid = memory.gridMemory;
-//	FillMemory(memory.gridMemory); 
-//}
-//Grid::~Grid()
-//{
-//}
-//
-//// (っ-﹏- ς)
-//// please remember make debugging tools to check this stuff it is so scary
-//
-//Cell* Grid::GetCell(Coordinate coordinate) 
-//{ 
-//	
-//	return &grid[map[coordinate]];
-//} 
-//
-//void Grid::MoveGridItem(GridItem* item, Coordinate coord)
-//{
-//	Cell* home = GetCell(item->coord);
-//	Cell* target = GetCell(coord);
-//
-//	home->RemoveItem(item);
-//	target->AddItem(item);
-//
-//}
-//
-//void Grid::AddToGrid(GridItem* item, Coordinate coord)
-//{
-//	GetCell(coord)->AddItem(item);
-//}
-//
-//
-//
-//Cell Grid::CreateCell(int x, int y) 
-//{
-//	return Cell(x, y);
-//}
-//
-//void Grid::FillMemory(Cell* memory)
-//{
-//	 
-//	// needs guard rails for when used not on grid memory
-//
-//	int x,y = 0;
-//	for (int i = 0; i < MAX_CELLS; i++)
-//	{
-//		x = i % 10;
-//		y = i % 10 == 0 ? y + 10 : y;
-//
-//		new (&memory[i]) Cell(x, y);
-//		memory[i].position.x = x;
-//		memory[i].position.y = y; 
-//		std::string str = std::to_string(x) + ", " + std::to_string(y);
-//		map[memory[i].position] = i;
-//
-//	}
-//}
-// 
-//GridMemory::GridMemory()
-//{
-//	gridMemory = (Cell*)malloc(MAX_CELLS*sizeof(Cell)); 
-//}
-//GridMemory::~GridMemory()
-//{
-//	for (int i = 0; i < MAX_CELLS; i++) {
-//		gridMemory[i].~Cell(); // Explicitly call the destructor for each Cell
-//	}
-//	free(gridMemory);
-//}
-//
-//
-//// Cell
-///*======================================================================================*/ 
-///*
-//It is possible to add a grid item to unintialized cells
-//*/
-//Cell::Cell(int x, int y) : position({x, y}), componenets()
-//{ }
-//Cell::Cell() : position() { }
-//Cell::~Cell() {}
-//
-//// its all being added to cell[0,0] componenets
-//void Cell::AddItem(GridItem* item)
-//{
-//	item->coord = position;
-//	std::cout << componenets.size() << std::endl;
-//	if (componenets.empty())
-//		componenets = { item };
-//	else
-//		componenets.push_back(item);
-//}
-//
-//void Cell::RemoveItem(GridItem* item)
-//{
-//	item->coord = { 0, 0 };
-//	componenets.remove(item);
-//}
-//
-//void Cell::DrawCell()
-//{
-//	for (auto const& i : componenets)
-//		i->DrawItem();
-//} 
-//
-//// GridItem 
-///*======================================================================================*/
-//GridItem::GridItem() : resource(nullptr), coord{0,0}
-//{
-//
-//} 
-//GridItem::GridItem(GameResource* res) : resource(res), coord{0,0}
-//{}
-//
-//GridItem::~GridItem() {}
-//
-//Coordinate GridItem::GetGridPos()
-//{
-//	return coord;
-//}
-//Vector2 GridItem::GetWorldPos()
-//{
-//	Coordinate pos = coord;
-//	pos.x = pos.x * 32 + 280;
-//	pos.y = pos.y * 32 + 400;
-//	return { (float)pos.x, (float)pos.y };
-//}
-//
-//void GridItem::DrawItem()
-//{
-//	//std::cout << GetWorldPos().x << ", " << GetWorldPos().y << std::endl;
-//	DrawTextureV(resource->GetTexture(), GetWorldPos(), WHITE);
-//}
-//
-//
-//
-//// Tile 
-///*======================================================================================*/
-//Tile::Tile() {}
-//Tile::~Tile() {}
-//Tile::Tile(GameResource* res) : GridItem(res) {}
-//
-//
