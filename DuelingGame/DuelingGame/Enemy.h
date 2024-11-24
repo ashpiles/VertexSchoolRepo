@@ -5,7 +5,7 @@
 class Enemy : public Character
 {
 public:
-	Enemy(std::string name_, CharacterStats stats_, GameResource* res);
+	Enemy(std::string name_, CharacterStats stats_, Coordinate coord, GameResource* res);
 
 	//void IncreaseDifficulty(int RoundNumber); 
 

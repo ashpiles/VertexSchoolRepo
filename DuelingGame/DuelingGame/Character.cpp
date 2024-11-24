@@ -3,11 +3,12 @@
 #include "Character.h"
 #include <iostream>
 
-Character::Character(std::string name_, CharacterStats stats_, GameResource* res)
-	: GridItem(res), name(name_), stats(stats_), moveTimerMax(5)
+Character::Character(std::string name_, CharacterStats stats_, Coordinate coord, GameResource* res)
+	: GridItem(coord), name(name_), stats(stats_), moveTimerMax(5)
 {
-	renderDepth = 1;
-	collisionLayer = 1;
+	resource = res;
+	drawOrder = 2;
+	collisionMask = 2;
 }
 
 Character::~Character() { }
@@ -28,19 +29,16 @@ void Character::UpdateStamina(bool Increase) {
 		stamina = 0;
 }
 
-void Character::InitStats() {
+void Character::InitStats() 
+{
 	stats.health  = stats.maxHealth;
 	stats.stamina = stats.maxStamina;
 }
+
 void Character::DrawItem()
 {
-	Vector2 pos = { position.x * TILE_SIZE * 2, position.y * TILE_SIZE * 2 };
-	DrawTextureV(resource->GetTexture(), pos, WHITE);
-}
-
-void Character::Move(Coordinate coord)
-{
-
+	Vector2 pos = GetWorldPos();
+	DrawTexturePro(resource->GetTexture(), { 0,0,32,32 }, { pos.x, pos.y, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
 }
 
 //std::unique_ptr<Action> Character::GetActionFromInput(int Input) {

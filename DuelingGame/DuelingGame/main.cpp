@@ -41,31 +41,19 @@ int main(void)
 		.stamina = 2 
 	}; 
 
-
-	/*Grid grid = Grid();
-	std::vector<Tile> tiles;
-	for (auto& i : Grid::GetCells({ -10, -10 }, { 10, 10 }))
+	list<Tile> tiles;
+	for (int y = -10; y < 10; y++)
 	{
-		Coordinate coord = i->GetPosition();
-		if (std::abs(coord.x) >= 9 || std::abs(coord.y) >= 10 )
+		for (int x = -10; x < 10; x++)
 		{
-			tiles.push_back(Tile(&wallRes, 2));
+			tiles.emplace_back(Coordinate{x, y}, &tileRes);
 		}
-		else
-		{
-			tiles.push_back(Tile(&tileRes));
-		}
-		i->AddItem(&tiles.back());
 	}
-	
-	Player player("hero", playerStats, &playerRes);
-	Enemy enemy("gobo", enemyStats, &enemyRes);
 
-	Grid::GetCell({ 0, 0 }).AddItem(&player);
-	Grid::GetCell({ 1, 0 }).AddItem(&enemy); 
+	Player player("hero", playerStats, {0, 0}, &playerRes);
 
-	Vector2 playerPos = player.GetWorldPos();
 	Camera2D camera = { 0 };
+	Vector2 playerPos = player.GetWorldPos();
 	camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f };
 	camera.offset = { screenWidth / 2.0f, screenHeight / 2.0f };
 	camera.rotation = 0.0f;
@@ -74,39 +62,55 @@ int main(void)
 	menue.anchorOffset = { (screenWidth / 8), -(screenHeight / 5)};
     SetTargetFPS(60); 
 
-	bool menueOpen = false;
 
-	// loops 4ever
-//	Grid::PathFindTo({ 0,0 });
-*/
-    while (!WindowShouldClose())
-    {
-        // Update
-        //---------------------------------------------------------------------------------- 
-	/*	Vector2 movement = {0, 0};
-		if (menue.IsOpen() == false) 
-		{ 
+	ItemFunc drawTiles = [](list<int> indecies) -> list<GridItem*>{ 
+
+		list<GridItem*> items; 
+		GridItem* item;
+
+		for (int index : indecies)
+		{
+			item = Grid::GetItem(index);
+			if (item->GetDrawOrder() <= 1)
+				item->DrawItem();
+			else
+				items.push_back(item);
+		}
+		return items;
+	};
+
+	while (!WindowShouldClose())
+	{
+		// Update
+		//---------------------------------------------------------------------------------- 
+		Vector2 movement = {0, 0};
+		if (menue.IsOpen() == false)
+		{
 			if		(IsKeyDown(KEY_D)) player.Move({  1, 0 });
 			else if (IsKeyDown(KEY_A)) player.Move({ -1, 0 });
 			if		(IsKeyDown(KEY_W)) player.Move({ 0, -1 });
-			else if (IsKeyDown(KEY_S)) player.Move({ 0, 1 }); 
+			else if (IsKeyDown(KEY_S)) player.Move({ 0, 1 });
 		}
 
 		menue.ListenForInput((KeyboardKey) GetKeyPressed());
 		playerPos = player.GetWorldPos();
-		camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f }; 
-	*/
-        // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
+		camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f };
+	// Draw
+	//----------------------------------------------------------------------------------
+		BeginDrawing();
 
-            ClearBackground(BLACK);
-			//BeginMode2D(camera);
+		ClearBackground(BLACK);
 
-				//grid.DrawGrid();
-				//if (menue.IsOpen()) menue.Draw();
+			BeginMode2D(camera);
+
+				list<GridItem*> next = Grid::GetCells({ -10, -10 }, { 10, 10 }, drawTiles);
+				for (auto const& item : next)
+				{
+					item->DrawItem();
+				}
+				if (menue.IsOpen()) menue.Draw();
 	
-			//EndMode2D(); 
+			EndMode2D(); 
 
         EndDrawing();
     }

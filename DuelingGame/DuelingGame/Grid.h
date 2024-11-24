@@ -4,21 +4,20 @@
 #include <map>
 #include <list>
 #include <vector>
-#include <queue>
-#include <memory>
 #include <cmath>
 #include "GameObject.h"
-#include <random>
-#include <typeinfo>
-
-class Grid;
-class Cell;
-class GridItem;
-
-#define MAX_CELLS 400
-#define TILE_SIZE 16
+#include <random> 
 
 using namespace std;
+
+class Grid;
+class GridItem;
+#define MAX_CELLS 400
+#define TILE_SIZE 16
+#define MAX_ITEMS 1000
+
+
+typedef list<GridItem*> (*ItemFunc)(list<int>);
 
 struct Coordinate
 {
@@ -44,44 +43,46 @@ struct Coordinate
 
 		return x < 0 && y < 0 || x >= 0 && y >= 0 ? c : -c - 1;
 	}
+
+	static Coordinate ReverseHash(int hash)
+	{
+		int abs = hash % 2 == 0 ? hash : -(hash + 1);
+		int z = static_cast<int>(floor(sqrt(2.0 * abs)));
+		int w = abs - (z * (z + 1)) / 2; // triangular number
+
+		int a = z >= w ? z : w;
+		int b = z >= w ? w : z;
+
+		int x = a % 2 == 0 ? a / 2 : -(a + 1) / 2;
+		int y = b % 2 == 0 ? b / 2 : -(b + 1) / 2;
+
+		if (hash % 2 == 0)
+		{
+			x = -x;
+			y = -y;
+		}
+
+		return Coordinate{ 0, 0 };
+	}
 };
 
 class Grid final
 {
 public:
-	Grid();
-	~Grid();
-
-
-	Cell* GetCell(Coordinate pos);
-	vector<Cell*> GetCells(Coordinate from, Coordinate to);
+	static list<GridItem*> GetCell(Coordinate pos, ItemFunc func = nullptr);
+	static list<GridItem*> GetCells(Coordinate from, Coordinate to, ItemFunc func = nullptr);
+	static GridItem* GetItem(int index) { return Items[index]; }
 private:
-	// coord : uuid, type or property
 	
-	static map<int, Cell* > GridMap;
-};
-
-
-class Cell final
-{
-public:
-	Cell(Coordinate coord);
-	~Cell();
-	GridItem* GetItem(string id);
-	vector<GridItem*> GetItems();
-	vector<GridItem*> GetByType(size_t type);
-	void AddItem(string id);
-	void RemoveItem(string id);
-
-	const Coordinate coordinate;
-private:
-	map<string, GridItem*> IDMap;
-	map<size_t, string> typeMap;
-};
-
-
-
-
+	static map<int, list<int> > GridMap;
+	static map<string, int> IDMap;
+	static GridItem* Items[MAX_ITEMS];
+	static int itemCount;
+	static map<int, bool> isItemFree;
+	
+	friend class GridItem;
+}; 
+ 
 /// <summary>
 /// Game resource accessible by the Grid
 /// allows for simple behaviours
@@ -90,107 +91,36 @@ private:
 class GridItem
 {
 public:
+	~GridItem();
 	virtual void DrawItem() = 0;
-	virtual void Move() = 0;
+	void Move(Coordinate coord);
+	uint16_t GetDrawOrder() { return drawOrder; }
+	uint16_t GetCollisionMask() { return collisionMask; }
 
 	const string ID;
 private:
-	GridItem();
-	~GridItem();
 	string MakeUUID();
+	int memoryIndex;
 
-	static map<string, unique_ptr<GridItem> > ItemTable;
-	friend class Cell;
 protected: 
+	GridItem(Coordinate coord);
 
 	uint16_t collisionMask;
 	uint16_t drawOrder;
 	GameResource* resource;
+	Vector2 position;
+	Coordinate coordinate = { 0 , 0 };
+	friend class Cell;
 };
 
-class Tile : GridItem
-{ };
-/*class Grid final
+
+class Tile : public GridItem
 {
 public:
-	Grid();
-	~Grid();
-	static Cell& GetCell(Coordinate coord); // should get via id
-	static vector<Cell*> GetCells(Coordinate from, Coordinate to); 
-	static unique_ptr<Cell> grid;
-	static void PathFindTo(Coordinate coord);
-	void DrawGrid();
-	// should use remote cont to move a grid item with its move function?
-private:
-	Cell* memory;
-	static map<int, int> gridMap;
-
-}; 
-
-
-class Cell final
-{
-public:
-	// add cell needs a template func which converts the item to a unique ptr
-
-	void AddItem(GridItem* item);
-	void RemoveItem(GridItem* item);
-	unique_ptr<GridItem> PopItem(GridItem& item);
-	void DrawCell(); // have a flag for grid items to determine if they are to be drawn
-	Coordinate GetPosition() { return position; }
-	~Cell();
-
-private:
-	Cell();
-	Cell(int x, int y);
-	Cell(Coordinate coord);
-	Coordinate position;
-
-	// there needs to be a draw priority on draw items
-	map<string, GridItem* > items; 
-	friend class Grid;
-};
-
-class GridItem
-{
-public:
-	virtual GridItem Create(Coordinate coord) = 0; // makes the item
-	virtual void DrawItem() = 0;
-	virtual void Move(Coordinate coord) = 0;
-	const Coordinate GetPosition() { return position; }
-	int GetCollisionLayer() { return collisionLayer; }
-	Vector2 GetWorldPos(); 
-	const string ID;
-
-protected: 
-	GridItem();
-	GridItem(GameResource* res);
-	~GridItem();
-	int renderDepth = 0;
-	int collisionLayer = 0; // should make an unisgned bit mask
-	const float moveTimerMax = 50;
-	float moveTimer = 0;
-	Coordinate position;
-    GameResource* resource;
-
-private:
-	string MakeUUID();
-	friend class Cell; 
-};
-
-// need to get position inside tile
-class Tile : virtual public GridItem
-{
-public:
-	Tile();
-	Tile(GameResource* res); 
-	Tile(GameResource* res, int colLayer);
+	Tile(Coordinate coord, GameResource* res);
 	~Tile();
-
 	void DrawItem();
-	void Move(Coordinate coord);
+
 };
 
-*/
- 
 #endif

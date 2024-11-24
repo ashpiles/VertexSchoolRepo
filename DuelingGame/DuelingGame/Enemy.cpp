@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include "Action.h"
  
-Enemy::Enemy(std::string name_, CharacterStats stats_, GameResource* res) : 
-	Character(name_ , stats_, res), Generator(std::random_device{}()), Distribution(0, 2)
+Enemy::Enemy(std::string name_, CharacterStats stats_, Coordinate coord, GameResource* res) : 
+	Character(name_, stats_, coord, res), Generator(std::random_device{}()), Distribution(0, 2)
 { }
 
 

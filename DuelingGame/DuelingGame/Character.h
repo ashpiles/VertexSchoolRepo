@@ -16,27 +16,23 @@ struct CharacterStats
 	int stamina; 
 };
 
-class Character : virtual public GridItem
+class Character : public GridItem
 {
 public:
-
-	Character(std::string name_, CharacterStats stats_, GameResource* res);
+	Character(std::string name_, CharacterStats stats_, Coordinate coord, GameResource* res);
 	~Character();
-
 	void UpdateHealth(int Amount);
 	void UpdateStamina(bool Increase);
-
 	void InitStats();
 	void DrawItem();
-	void Move(Coordinate coord);
+	Vector2 GetWorldPos() { return { (float)coordinate.x * TILE_SIZE, (float)coordinate.y * TILE_SIZE }; }
+
 	//std::unique_ptr<Action> GetActionFromInput(int Input); 
 	//virtual std::unique_ptr<Action> ChooseAction() = 0;
-
-
 protected:
+
 	const float moveTimerMax;
 	float moveTimer = 0;
-
 	std::string name;
 	CharacterStats stats;
 };
