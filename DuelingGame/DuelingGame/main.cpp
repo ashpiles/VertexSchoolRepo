@@ -40,7 +40,7 @@ int main(void)
 		.maxStamina = 2,
 		.stamina = 2 
 	}; 
-
+ 
 	list<Tile> tiles;
 	for (int y = -10; y < 10; y++)
 	{
@@ -72,13 +72,18 @@ int main(void)
 		{
 			item = Grid::GetItem(index);
 			if (item->GetDrawOrder() <= 1)
+			{ 
 				item->DrawItem();
+			}
 			else
 				items.push_back(item);
 		}
 		return items;
 	};
 
+	queue<Coordinate> path;
+
+	Coordinate mouseCoord = { 0, 0 };
 	while (!WindowShouldClose())
 	{
 		// Update
@@ -91,10 +96,33 @@ int main(void)
 			if		(IsKeyDown(KEY_W)) player.Move({ 0, -1 });
 			else if (IsKeyDown(KEY_S)) player.Move({ 0, 1 });
 		}
-
+ 
 		menue.ListenForInput((KeyboardKey) GetKeyPressed());
 		playerPos = player.GetWorldPos();
 		camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f };
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+		{
+			Vector2 mousePos = GetMousePosition();
+			mousePos.x = mousePos.x - (screenWidth / 2);
+			mousePos.y = (screenHeight / 2) - mousePos.y;
+			cout << floor(mousePos.x / 32) << ", " << floor(mousePos.y / 8) << endl;
+			Coordinate pos{ (int)floor(mousePos.x / (TILE_SIZE * 2)) , (int)floor(mousePos.y / (TILE_SIZE * 2))};
+			pos.y *= -1;
+			pos = pos + player.GetPosition();
+			//	cout << pos.x << ", " << pos.y << endl;
+			mouseCoord = pos + Coordinate{1, 0};
+			path = player.PathFindTo(mouseCoord);
+		}
+		else
+			mouseCoord = { 0, 0 };
+
+		if (!path.empty())
+		{ 
+			player.Move(path.front());
+			cout << path.front().x << ", " << path.front().y << endl;
+			path.pop();
+		}
+
 	// Draw
 	//----------------------------------------------------------------------------------
 		BeginDrawing();
@@ -108,8 +136,14 @@ int main(void)
 				{
 					item->DrawItem();
 				}
+
 				if (menue.IsOpen()) menue.Draw();
-	
+
+				if (mouseCoord.Hash() != 0)
+				{
+					DrawRectangle(mouseCoord.x * TILE_SIZE, mouseCoord.y * TILE_SIZE, 16, 16, Fade(RED, 0.5f)); 
+				}
+
 			EndMode2D(); 
 
         EndDrawing();

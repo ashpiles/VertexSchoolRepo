@@ -4,6 +4,7 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <queue>
 #include <cmath>
 #include "GameObject.h"
 #include <random> 
@@ -31,39 +32,60 @@ struct Coordinate
 
 	bool operator<(const Coordinate& other) const
 	{
-        return x < other.x || (x == other.x && y < other.y);
-    }
+		return x < other.x || (x == other.x && y < other.y);
+	}
 
-	// Szudzik Pairing
-	int Hash()
+	Coordinate operator-(const Coordinate& other) const
 	{
-		int a = x >= 0 ? 2 * x : -2 * x - 1;
-		int b = y >= 0 ? 2 * y : -2 * y - 1;
-		int c = (a >= b ? a * a + a + b : a + b * b) / 2;
+		return { x - other.x, y - other.y };
+	}
+
+	Coordinate operator+(const Coordinate& other) const
+	{
+		return { x + other.x, y + other.y };
+	} 
+
+	static Coordinate Magnitude(Coordinate& c1, Coordinate& c2)
+	{
+		int yDiff = abs(c1.y - c2.y); 
+		int xDiff = abs(c1.x - c2.x); 
+
+		return { xDiff, yDiff };
+	}
+	// Szudzik Pairing
+	long Hash()
+	{
+		long a = x >= 0 ? 2 * x : -2 * x - 1;
+		long b = y >= 0 ? 2 * y : -2 * y - 1;
+		long c = (a >= b ? a * a + a + b : a + b * b) / 2;
 
 		return x < 0 && y < 0 || x >= 0 && y >= 0 ? c : -c - 1;
 	}
 
-	static Coordinate ReverseHash(int hash)
+	static Coordinate ReverseHash(long hash)
 	{
-		int abs = hash % 2 == 0 ? hash : -(hash + 1);
-		int z = static_cast<int>(floor(sqrt(2.0 * abs)));
-		int w = abs - (z * (z + 1)) / 2; // triangular number
+		long c = hash >= 0 ? hash * 2 : -hash * 2 - 1;
 
-		int a = z >= w ? z : w;
-		int b = z >= w ? w : z;
-
-		int x = a % 2 == 0 ? a / 2 : -(a + 1) / 2;
-		int y = b % 2 == 0 ? b / 2 : -(b + 1) / 2;
-
-		if (hash % 2 == 0)
+		int a = 0;
+		int b = 0;
+		long z = floor(sqrt(c));
+		if (z * (z + 1) <= c)
 		{
-			x = -x;
-			y = -y;
+			a = z;
+			b = c - (z * z + z);
+		}
+		else
+		{
+			a = c - (z * z);
+			b = z;
 		}
 
-		return Coordinate{ 0, 0 };
+		int x = (a % 2 == 0 ? a / 2 : -(a + 1) / 2);
+		int y = (b % 2 == 0 ? b / 2 : -(b + 1) / 2); 
+
+		return { x, y };
 	}
+
 };
 
 class Grid final
@@ -71,7 +93,9 @@ class Grid final
 public:
 	static list<GridItem*> GetCell(Coordinate pos, ItemFunc func = nullptr);
 	static list<GridItem*> GetCells(Coordinate from, Coordinate to, ItemFunc func = nullptr);
+	static list<Coordinate> GetCoords(Coordinate from, Coordinate to);
 	static GridItem* GetItem(int index) { return Items[index]; }
+
 private:
 	
 	static map<int, list<int> > GridMap;
@@ -94,8 +118,12 @@ public:
 	~GridItem();
 	virtual void DrawItem() = 0;
 	void Move(Coordinate coord);
+	void MoveTo(Coordinate coord);
+	queue<Coordinate> PathFindTo(Coordinate coord);
+
 	uint16_t GetDrawOrder() { return drawOrder; }
 	uint16_t GetCollisionMask() { return collisionMask; }
+	Coordinate GetPosition() { return coordinate; }
 
 	const string ID;
 private:

@@ -39,16 +39,16 @@ list<GridItem*> Grid::GetCells(Coordinate from, Coordinate to, ItemFunc func)
 	list<GridItem*> items; 
 
 	// Magnitude
-	int yDiff = abs(to.y - from.y) + 1; 
-	int xDiff = abs(to.x - from.x) + 1; 
+	Coordinate diff = Coordinate::Magnitude(to, from); 
+	diff = diff + Coordinate{1, 1};
 
 	// Direction
 	int xDir = (to.x > from.x) ? 1 : (to.x < from.x) ? -1 : 0;
 	int yDir = (to.y > from.y) ? 1 : (to.y < from.y) ? -1 : 0;
 
-	for (int y = 0; y < yDiff; y++)
+	for (int y = 0; y < diff.y; y++)
 	{
-		for (int x = 0; x < xDiff; x++)
+		for (int x = 0; x < diff.x; x++)
 		{
 			Coordinate coord = {
 				from.x + x * xDir,
@@ -61,7 +61,36 @@ list<GridItem*> Grid::GetCells(Coordinate from, Coordinate to, ItemFunc func)
 	}
 
 	return items;
-}
+} 
+
+list<Coordinate> Grid::GetCoords(Coordinate from, Coordinate to) 
+{
+	list<Coordinate> coords; 
+
+	// Magnitude
+	Coordinate diff = Coordinate::Magnitude(to, from);
+	diff = diff + Coordinate{1, 1};
+
+	// Direction
+	int xDir = (to.x > from.x) ? 1 : (to.x < from.x) ? -1 : 0;
+	int yDir = (to.y > from.y) ? 1 : (to.y < from.y) ? -1 : 0;
+
+	for (int y = 0; y < diff.y; y++)
+	{
+		for (int x = 0; x < diff.x; x++)
+		{
+			Coordinate coord = {
+			from.x + x * xDir,
+			from.y + y * yDir
+			};
+
+			if(GridMap.contains(coord.Hash()))
+				coords.push_back(coord);
+		}
+	}
+
+return coords;
+} 
 
 
 map<int, list<int> > Grid::GridMap;
@@ -87,12 +116,63 @@ GridItem::~GridItem()
 	Grid::isItemFree[memoryIndex] = true;
 }
 
+// Move from current location by vector amount
 void GridItem::Move(Coordinate coord)
 {
 	Grid::GridMap[coordinate.Hash()].remove(memoryIndex);
 	coordinate.x += coord.x;
 	coordinate.y += coord.y;
 	Grid::GridMap[coordinate.Hash()].push_back(memoryIndex);
+}
+
+// Move to literall coordinate location
+void GridItem::MoveTo(Coordinate coord)
+{
+	Grid::GridMap[coordinate.Hash()].remove(memoryIndex);
+	coordinate.x = coord.x;
+	coordinate.y = coord.y;
+	Grid::GridMap[coordinate.Hash()].remove(memoryIndex);
+}
+
+// might be best to seperate this into a different class
+// and allow for injecting functions via remote controll for the different entity types
+
+
+queue<Coordinate> GridItem::PathFindTo(Coordinate goal)
+{
+	queue<Coordinate> path;
+	vector<Coordinate> frontier;
+	map<int, Coordinate> cameFrom;
+	map<int, int> distance;
+
+	frontier.push_back(coordinate);
+	cameFrom[coordinate.Hash()] = { 0, 0 };
+
+	while (!frontier.empty())
+	{
+		Coordinate current = frontier.back();
+		Coordinate n_back  = { current.x - 1, current.y - 1 };
+		Coordinate n_front = { current.x + 1, current.y + 1 };
+		frontier.pop_back();
+		
+		for (auto next : Grid::GetCoords(n_back, n_front))
+		{
+			if (!cameFrom.contains(next.Hash()))
+			{
+				frontier.push_back(next);
+				cameFrom[next.Hash()] = current - next;
+				distance[next.Hash()] = 1 + distance[current.Hash()];
+			}
+		}
+	}
+
+	while(goal.Hash() != coordinate.Hash())
+	{
+		path.push(cameFrom[goal.Hash()]);
+		goal = goal + cameFrom[goal.Hash()];
+	}
+
+	return path;
 }
 
 string GridItem::MakeUUID()

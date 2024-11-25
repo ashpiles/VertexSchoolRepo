@@ -39,7 +39,7 @@
     <ClCompile Include="Character.cpp">
       <Filter>Source Files\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
+    <ClCompile Include="Debug.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Action.cpp">
@@ -65,7 +65,7 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="Log.h">
+    <ClInclude Include="Debug.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Action.h">
