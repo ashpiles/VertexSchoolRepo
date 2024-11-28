@@ -3,13 +3,9 @@
 #define GRID_H
 #include <map>
 #include <list>
-<<<<<<< Updated upstream
 #include <vector>
-=======
-#include <vector> 
 #include <string>
 #include <queue>
->>>>>>> Stashed changes
 #include <cmath>
 #include <algorithm>
 #include "raylib.h"
@@ -48,14 +44,6 @@ struct Coordinate
         return x < other.x || (x == other.x && y < other.y);
     }
 
-<<<<<<< Updated upstream
-	// Szudzik Pairing
-	int Hash()
-	{
-		int a = x >= 0 ? 2 * x : -2 * x - 1;
-		int b = y >= 0 ? 2 * y : -2 * y - 1;
-		int c = (a >= b ? a * a + a + b : a + b * b) / 2;
-=======
 	Coordinate operator-(const Coordinate& other) const
 	{
 		return { x - other.x, y - other.y };
@@ -103,45 +91,35 @@ struct Coordinate
 		long a = x >= 0 ? 2 * x : -2 * x - 1;
 		long b = y >= 0 ? 2 * y : -2 * y - 1;
 		long c = (a >= b ? a * a + a + b : a + b * b) / 2; 
->>>>>>> Stashed changes
 
 		return x < 0 && y < 0 || x >= 0 && y >= 0 ? c : -c - 1; 
 	}
 
-<<<<<<< Updated upstream
-	static Coordinate ReverseHash(int hash)
-=======
 	// Szudzik Unpairing Function
 	static Coordinate ReverseHash(long hash)
->>>>>>> Stashed changes
 	{
-		int abs = hash % 2 == 0 ? hash : -(hash + 1);
-		int z = static_cast<int>(floor(sqrt(2.0 * abs)));
-		int w = abs - (z * (z + 1)) / 2; // triangular number
+		long c = hash >= 0 ? hash * 2 : -hash * 2 - 1;
 
-<<<<<<< Updated upstream
-		int a = z >= w ? z : w;
-		int b = z >= w ? w : z;
-
-		int x = a % 2 == 0 ? a / 2 : -(a + 1) / 2;
-		int y = b % 2 == 0 ? b / 2 : -(b + 1) / 2;
-
-		if (hash % 2 == 0)
-=======
 		int a = 0;
 		int b = 0;
 		long z = floor(sqrt(c));
-		if (z * (z + 1) <= c) 
->>>>>>> Stashed changes
+		if (z * (z + 1) <= c)
 		{
-			x = -x;
-			y = -y;
+			a = z;
+			b = c - (z * z + z);
+		}
+		else
+		{
+			a = c - (z * z);
+			b = z;
 		}
 
-		return Coordinate{ 0, 0 };
+		int x = (a % 2 == 0 ? a / 2 : -(a + 1) / 2);
+		int y = (b % 2 == 0 ? b / 2 : -(b + 1) / 2);
+
+		return { x, y };
 	}
-<<<<<<< Updated upstream
-=======
+
 
 }; 
 
@@ -155,18 +133,17 @@ struct CellSearch
 	T& GetData();
 private:
 	T result;
->>>>>>> Stashed changes
 };
  
 
 class Grid final
 { 
 public:
-<<<<<<< Updated upstream
-	static list<GridItem*> GetCell(Coordinate pos, ItemFunc func = nullptr);
-	static list<GridItem*> GetCells(Coordinate from, Coordinate to, ItemFunc func = nullptr);
+	template<typename T>
+	static void GetCell(Coordinate pos, CellSearch<T>& func );
+	template<typename T>
+	static void GetCells(Coordinate from, Coordinate to, CellSearch<T>& func);
 	static GridItem* GetItem(int index) { return Items[index]; }
-=======
 	template<typename T>
 	static void GetCell(Coordinate pos, CellSearch<T>* func);
 
@@ -179,7 +156,6 @@ public:
 	static void DebugPathFinding();
 
 
->>>>>>> Stashed changes
 private:
 	
 	static map<int, list<int> > GridMap;
@@ -203,17 +179,14 @@ public:
 	virtual void DrawItem() = 0;
 	//virtual void Update();
 	void Move(Coordinate coord);
-<<<<<<< Updated upstream
 	uint16_t GetDrawOrder() { return drawOrder; }
 	uint16_t GetCollisionMask() { return collisionMask; }
-=======
 	void MoveTo(Coordinate coord);
 	deque<MoveAction> PathFindTo(Coordinate coord);
 
 	uint16_t GetDrawOrder();
 	uint16_t GetCollisionMask();
 	Coordinate GetPosition();
->>>>>>> Stashed changes
 
 	const string ID;
 private:

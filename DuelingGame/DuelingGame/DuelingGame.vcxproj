@@ -147,13 +147,10 @@
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Grid.h" />
-<<<<<<< Updated upstream
     <ClInclude Include="Log.h" />
-=======
     <ClInclude Include="Debug.h" />
     <ClInclude Include="GridItem.h" />
     <ClInclude Include="GridSearch.h" />
->>>>>>> Stashed changes
     <ClInclude Include="UI.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

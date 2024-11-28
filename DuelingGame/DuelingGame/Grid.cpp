@@ -45,12 +45,9 @@ void Grid::GetCells(Coordinate from, Coordinate to, CellSearch<T>* func)
 			GetCell<T>(coord, func);
 		}
 	}
-<<<<<<< Updated upstream
 
 	return items;
 }
-=======
- } 
 
 list<Coordinate> Grid::GetCoords(Coordinate from, Coordinate to) 
 {
@@ -80,7 +77,6 @@ list<Coordinate> Grid::GetCoords(Coordinate from, Coordinate to)
 
 return coords;
 } 
->>>>>>> Stashed changes
 
 void DebugPathFinding()
 {
@@ -190,8 +186,6 @@ void GridItem::Move(Coordinate coord)
 	Grid::GridMap[coordinate.Hash()].push_back(memoryIndex);
 }
 
-<<<<<<< Updated upstream
-=======
 // Move to literall coordinate location
 void GridItem::MoveTo(Coordinate coord)
 {
@@ -250,7 +244,6 @@ uint16_t GridItem::GetDrawOrder() { return drawOrder; }
 uint16_t GridItem::GetCollisionMask() { return collisionMask; } 
 Coordinate GridItem::GetPosition() { return coordinate; }
 
->>>>>>> Stashed changes
 string GridItem::MakeUUID()
 {
 	static random_device dev;

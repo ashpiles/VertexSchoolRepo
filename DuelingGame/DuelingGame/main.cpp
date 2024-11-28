@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "Grid.h"
 #include "UI.h"
+#include "raylib.h"
 
 
 // the issue is that i am moving data objs around its getting a little complex
@@ -68,26 +69,13 @@ int main(void)
 	Coordinate begining;
 	Coordinate end;
 
-<<<<<<< Updated upstream
-		for (int index : indecies)
-		{
-			item = Grid::GetItem(index);
-			if (item->GetDrawOrder() <= 1)
-				item->DrawItem();
-			else
-				items.push_back(item);
-		}
-		return items;
-	};
 
-=======
 	deque<MoveAction> path;
 
 
 	CellSearch<mapped_items> itemMap;
 
 	Coordinate mouseCoord = { 0, 0 };
->>>>>>> Stashed changes
 	while (!WindowShouldClose())
 	{
 		// Update
@@ -100,10 +88,8 @@ int main(void)
 			if		(IsKeyDown(KEY_W)) player.Move({ 0, -1 });
 			else if (IsKeyDown(KEY_S)) player.Move({ 0, 1 });
 		}
-<<<<<<< Updated upstream
-=======
  
-			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 		{
 			Vector2 mousePos = GetMousePosition();
 			mousePos.x = mousePos.x - (screenWidth / 2);
@@ -150,16 +136,12 @@ int main(void)
 		}
 		else
 			moveTimer += GetTime();
->>>>>>> Stashed changes
 
 		menue.ListenForInput((KeyboardKey) GetKeyPressed());
 		playerPos = player.GetWorldPos();
 		camera.target = { playerPos.x + 20.0f, playerPos.y + 20.0f };
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
 	// Draw
 	//----------------------------------------------------------------------------------
 		BeginDrawing();
@@ -189,11 +171,7 @@ int main(void)
 				{
 					item->DrawItem();
 				}
-<<<<<<< Updated upstream
-=======
-
 			
->>>>>>> Stashed changes
 				if (menue.IsOpen()) menue.Draw();
 	
 			EndMode2D(); 
