@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\ashpile\Desktop\.dev\VS-work\DuelingGame\raylib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ashpile\Desktop\.dev\VS-work\DuelingGame\Include;C:\Users\ashpile\Desktop\.dev\VS-work\DuelingGame\raylib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Action.cpp" />
+    <ClCompile Include="CellSearch.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Grid.cpp" />
@@ -139,17 +140,22 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Action.h" />
-    <ClInclude Include="Character.h" />
+    <ClInclude Include="Coordinate.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Grid.h" />
+<<<<<<< Updated upstream
     <ClInclude Include="Log.h" />
+=======
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="GridItem.h" />
+    <ClInclude Include="GridSearch.h" />
+>>>>>>> Stashed changes
     <ClInclude Include="UI.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

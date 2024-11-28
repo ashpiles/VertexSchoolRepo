@@ -1,9 +1,10 @@
 #pragma once
 #ifndef UI_H
 #define UI_H
-#include "raylib.h"
-#include "GameObject.h"
 #include <iostream>
+#include "Grid.h"
+#include "raylib.h"
+class Vector2;
 
 class Menue
 {

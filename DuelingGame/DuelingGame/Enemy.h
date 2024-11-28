@@ -1,5 +1,5 @@
 #pragma once 
-#include "Character.h"
+#include "Grid.h"
 #include <random>
  
 class Enemy : public Character

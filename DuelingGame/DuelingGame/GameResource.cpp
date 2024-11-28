@@ -1,4 +1,5 @@
-#include "GameObject.h"
+#include "Grid.h" 
+#include "raylib.h"
 
 GameResource::GameResource(std::string path) 
 { 

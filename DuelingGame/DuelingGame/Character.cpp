@@ -1,7 +1,4 @@
-#include "Action.h"
 #include "Grid.h"
-#include "Character.h"
-#include <iostream>
 
 Character::Character(std::string name_, CharacterStats stats_, Coordinate coord, GameResource* res)
 	: GridItem(coord), name(name_), stats(stats_), moveTimerMax(5)
@@ -38,8 +35,9 @@ void Character::InitStats()
 void Character::DrawItem()
 {
 	Vector2 pos = GetWorldPos();
-	DrawTexturePro(resource->GetTexture(), { 0,0,32,32 }, { pos.x, pos.y, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
+	DrawTexturePro(resource->GetTexture(), {0,0,32,32 }, { pos.x - 8, pos.y - 16, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
 }
+
 
 //std::unique_ptr<Action> Character::GetActionFromInput(int Input) {
 //	switch (Input) {

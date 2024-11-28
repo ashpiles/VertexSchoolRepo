@@ -1,111 +1,74 @@
-﻿/*
-we put the oops in oop
-you already know how it is
-                             ╱|、
-                           (˚ˎ 。7  
-                            |、˜〵          
-                            じしˍ,)ノ
-*/ 
-#pragma once
+﻿#pragma once
 #ifndef ACTION_H
 #define ACTION_H
-
+#include "Coordinate.h"
 #include <string>
-#include <iostream>
-#include <map>
-#include <array>
-#include <list>
-#include <memory>
 
-// Forward declarations
 class Character;
-class Action;
-class ActionMediator;
+struct Coordinate;
 
-// Abstract Classes
-/*=============================================================================*/
-
-// Enum for Action Types
-enum ActionType {
-    ATTACK,
-    DEFEND,
-    PARRY,
-    NONE
-};
-
-// ActionMediator class
-class ActionMediator {
+/// <summary>
+/// Command pattern utilizing functors
+/// an execution returns a pointer to itself which is the best we can do as a closurer
+/// allows for state to be stored in the object as well
+/// </summary>
+struct Action
+{
 public:
-    virtual void ProcessActions(Action* sender, const std::string& event) const = 0;
+	virtual ~Action() {}
+	// execute
+	virtual Action* operator()(Character* actor) = 0;
+	virtual void Undo() = 0;
+protected:
+	Character* actor = nullptr;
 };
 
-// Action class
-class Action {
-protected:
-    Action* Parent;
-    ActionMediator* Mediator;
+struct MoveAction : Action
+{
+public:
+	MoveAction(Coordinate coord_);
+	MoveAction* operator()(Character* actor);
+	void Undo();
+
+	Coordinate GetCoordinate() { return coord; }
+
+private: 
+	Coordinate coord;
+};
+
+
+struct DefendAction : Action
+{
+public:
+	DefendAction(int defAmount_, std::string str_);
+	DefendAction* operator()(Character* actor);
+	void Undo(); 
+
 private:
-    Character* Target;
-public:
-    virtual ~Action();
-    void SetParent(Action* parent);
-    void SetTarget(Character* target);
-    Action* GetParent() const;
-
-    virtual void Add(Action* action) {}
-    virtual void Remove(Action* action) {}
-
-    virtual bool IsComposite() const;
-
-    Action(ActionMediator* mediator = nullptr, Character* target = nullptr);
-    void SetMediator(ActionMediator* mediator);
-    virtual std::string Act() const = 0;
+	std::string str;
+	int defAmount;
 };
 
-// CompositeAction class
-class CompositeAction : public Action {
-protected:
-    std::list<std::shared_ptr<Action>> Children;
+struct AttackAction : Action
+{
 public:
-    void Add(Action* action) override;
-    void Remove(Action* action) override;
-    bool IsComposite() const override;
-    std::string Act() const override;
+	AttackAction( std::string str_);
+	AttackAction* operator()(Character* actor, Character* subject);
+	void Undo();
+
+private:
+	std::string str;
+};
+ 
+struct ParryAction : Action
+{
+public:
+	ParryAction( std::string str_);
+	ParryAction* operator()(Character* actor, Character* subject);
+	void Undo();
+
+private:
+	std::string str;
 };
 
-// CombatActionMediator class
-class CombatActionMediator : public ActionMediator {
-protected:
-    Action* action;
-public:
-    const std::map<ActionType, std::array<float, 3> > actionMap = {
-        {ATTACK, {0, 0.5f, -2}},
-        {DEFEND, {0.5f, 0, 0}},
-        {PARRY, {2, 0, 0}}
-    };
-    void ProcessActions(Action* sender, const std::string& event) const override;
-};
-
-// Concrete Action Classes
-/*=============================================================================*/
-
-class AttackAction : public Action {
-public:
-    AttackAction(ActionMediator* mediator = nullptr, Character* target = nullptr);
-    std::string Act() const override;
-};
-
-class DefendAction : public Action {
-public:
-    DefendAction(ActionMediator* mediator = nullptr, Character* target = nullptr);
-    std::string Act() const override;
-};
-
-class ParryAction : public Action {
-public:
-    ParryAction(ActionMediator* mediator = nullptr, Character* target = nullptr);
-    std::string Act() const override;
-};
-
-#endif // ACTION_H
-
+#endif
