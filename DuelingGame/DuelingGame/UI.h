@@ -2,9 +2,8 @@
 #ifndef UI_H
 #define UI_H
 #include <iostream>
-#include "Grid.h"
-#include "raylib.h"
-class Vector2;
+#include "GameEntity.h"
+
 
 class Menue
 {

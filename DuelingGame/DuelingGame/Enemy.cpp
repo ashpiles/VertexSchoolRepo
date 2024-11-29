@@ -4,6 +4,8 @@ Enemy::Enemy(std::string name_, CharacterStats stats_, Coordinate coord, GameRes
 	Character(name_, stats_, coord, res), Generator(std::random_device{}()), Distribution(0, 2)
 { }
 
+void Enemy::Update() {}
+
 
 //std::unique_ptr<Action> Enemy::ChooseAction() {
 //	int Input = Distribution(Generator);

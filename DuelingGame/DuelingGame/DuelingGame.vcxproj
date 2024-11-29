@@ -131,26 +131,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Action.cpp" />
-    <ClCompile Include="CellSearch.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridItem.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="GameResource.cpp" />
+    <ClCompile Include="GameEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Action.h" />
+    <ClInclude Include="CellSearch.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridItem.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Debug.h" />
-    <ClInclude Include="GridItem.h" />
-    <ClInclude Include="GridSearch.h" />
+    <ClInclude Include="GameEntity.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

@@ -45,16 +45,16 @@
     <ClCompile Include="Grid.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="GameResource.cpp">
+    <ClCompile Include="GameEntity.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="UI.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Action.cpp">
+    <ClCompile Include="GridItem.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="CellSearch.cpp">
+    <ClCompile Include="Coordinate.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,22 +68,28 @@
     <ClInclude Include="Log.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Action.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Grid.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="UI.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Coordinate.h">
+    <ClInclude Include="GameEntity.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="GridSearch.h">
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="CellSearch.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="GridItem.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinate.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>

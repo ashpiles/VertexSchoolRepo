@@ -1,10 +1,9 @@
 #include <iostream>
 
 #include "Player.h"
-#include "Enemy.h"
-#include "Grid.h"
+#include "Enemy.h" 
 #include "UI.h"
-#include "raylib.h"
+#include "Grid.h"
 
 
 // the issue is that i am moving data objs around its getting a little complex
@@ -15,7 +14,7 @@ int main(void)
 {
     const int screenWidth = 800;
     const int screenHeight = 450;
-	const float MoveTimer = 20.0f;
+	const float MoveTimer = 10.0f;
 	float moveTimer = 0.0f;
 
     InitWindow(screenWidth, screenHeight, "Dungeons Dungeons and more Dungeons");
@@ -42,7 +41,7 @@ int main(void)
 		.stamina = 2 
 	}; 
 
-	list<Tile> tiles;
+	std::list<Tile> tiles;
 	for (int y = -10; y < 10; y++)
 	{
 		for (int x = -10; x < 10; x++)
@@ -65,12 +64,12 @@ int main(void)
 
 
 
-	deque<Coordinate> prevPath;
+	std::deque<Coordinate> prevPath;
 	Coordinate begining;
 	Coordinate end;
 
 
-	deque<MoveAction> path;
+	std::deque<MoveAction> path;
 
 
 	CellSearch<mapped_items> itemMap;
@@ -94,11 +93,11 @@ int main(void)
 			Vector2 mousePos = GetMousePosition();
 			mousePos.x = mousePos.x - (screenWidth / 2);
 			mousePos.y = (screenHeight / 2) - mousePos.y;
-			cout << floor(mousePos.x / 32) << ", " << floor(mousePos.y / 8) << endl;
+			std::cout << floor(mousePos.x / 32) << ", " << floor(mousePos.y / 8) << std::endl;
 			Coordinate pos{ (int)floor(mousePos.x / (TILE_SIZE * 2)) , (int)floor(mousePos.y / (TILE_SIZE * 2))};
 			pos.y *= -1;
 			pos = pos + player.GetPosition();
-			//	cout << pos.x << ", " << pos.y << endl;
+			//	std::cout << pos.x << ", " << pos.y << std::endl;
 			mouseCoord = pos + Coordinate{1, 0};
 			path = player.PathFindTo(mouseCoord);
 			prevPath.clear();
@@ -127,11 +126,8 @@ int main(void)
 				MoveAction& moveFunc = path.front();
 				Coordinate coord = moveFunc.GetCoordinate();
 				MoveAction* trace = moveFunc(&player);
-				trace->Undo();
-				cout << coord.ToString() << endl;
-				cout << coord.x << ", " << coord.y << endl;
 				prevPath.push_back(player.GetPosition() - coord);
-				path.pop_front();
+				path.pop_front(); 
 			}
 		}
 		else
@@ -150,11 +146,15 @@ int main(void)
 
 			BeginMode2D(camera);
  
-				Grid::GetCells({ -10, -10 }, { 10, 10 }, &itemMap);
+				Grid::GetCells({ -10, -10 }, { 10, 10 }, itemMap); 
 
-				if (!prevPath.empty())
+				for (auto const& item : itemMap.GetData()["Tile"])
 				{
-					
+					item->DrawItem();
+				}
+	
+				if (!prevPath.empty())
+				{ 
 					DrawRectangle(begining.x * TILE_SIZE, begining.y * TILE_SIZE, 16, 16, BLUE); 
 					DrawRectangle(end.x * TILE_SIZE, end.y * TILE_SIZE, 16, 16, RED); 
 					for (auto const& p : prevPath)
@@ -163,15 +163,13 @@ int main(void)
 					}
 				}
 
-				for (auto const& item : itemMap.GetData()["Tile"])
-				{
-					item->DrawItem();
-				}
 				for (auto const& item : itemMap.GetData()["Player"])
 				{
 					item->DrawItem();
-				}
-			
+				} 
+
+
+	
 				if (menue.IsOpen()) menue.Draw();
 	
 			EndMode2D(); 

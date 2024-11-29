@@ -6,3 +6,5 @@ Player::Player(std::string name_, CharacterStats stats_, Coordinate coord, GameR
 	: Character(name_, stats_, coord, res) { }
 
 Player::~Player() {}
+
+void Player::Update() {}

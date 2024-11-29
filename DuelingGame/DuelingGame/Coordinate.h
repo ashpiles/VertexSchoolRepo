@@ -1,13 +1,21 @@
 #pragma once
-#ifndef COORDINATE_H
-#define	COORDINATE_H
-#include <cmath>
 #include <string>
-#include "raylib.h"
 
-// this might cause issues 
-// function pointers point to a single global function so this might cause issues
-// since it is intended for this function definition to be hotswapped
+struct Coordinate
+{
+	int x;
+	int y;
 
+	bool operator==(const Coordinate& other) const;
+	bool operator<(const Coordinate& other) const;
+	Coordinate operator-(const Coordinate& other) const;
+	Coordinate operator+(const Coordinate& other) const;
+	Coordinate operator*(const int& other) const;
+	std::string ToString();
+	Coordinate Clamp(); 
+	long Hash();
+	static Coordinate ReverseHash(long hash);
+	static Coordinate Magnitude(Coordinate& c1, Coordinate& c2);
+};
+ 
 
-#endif
